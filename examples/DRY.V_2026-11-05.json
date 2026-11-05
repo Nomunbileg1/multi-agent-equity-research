@@ -1,0 +1,42 @@
+{
+  "ticker": "DRY.V",
+  "as_of_date": "2026-11-05",
+  "decision": {
+    "rating": "SELL",
+    "confidence": 68,
+    "time_horizon": "3-6 months",
+    "key_reasons": [
+      "Confirmed long-term downtrend: price C$0.175 is 22.9% below the SMA 50 (C$0.227) and 41.2% below the SMA 200 (C$0.2975), with returns of -27.1% (1M), -41.7% (3M) and -38.6% (1Y). Neither average has been reclaimed.",
+      "Pre-revenue explorer burning about C$13.09M of free cash flow over four quarters (~30% of the C$43.96M market cap), with cash and debt unverified. The last raise (C$9.6M) is smaller than the burn, so further dilution is likely.",
+      "The 11/04 +20.7% bounce is unexplained and unconfirmed. The next session was flat on 221K shares, well below the 20-day average of 323K. A one-day spike is consistent with a squeeze or block trade, not a trend change.",
+      "No company-specific news since July 16, and sentiment data is too thin to offset the weak tape: one analyst, no consensus, and a C$1.20 target that carries no weight."
+    ],
+    "key_risks": [
+      "Short-covering or a speculative rally could extend the 11/04 bounce toward the SMA 50 (about +30%) before the downtrend resumes.",
+      "A positive drill result from Mud Lake or Lost Lake could re-rate an explorer sharply and quickly.",
+      "The company may have more cash than the missing data shows, or may raise financing at a premium, easing dilution and runway concerns.",
+      "Stock sits only 25% above its 52-week low of C$0.14, and illiquid micro-cap price swings cut both ways."
+    ],
+    "strongest_counterargument": "The Bull's best case is that the 10/21 capitulation (-17.1% on 878K shares) and the 11/04 high-volume rebound (+20.7% on 855K shares), together with a MACD that is above its signal line with a positive histogram, mark the start of a bottom. The price is already 63.5% below its high and discounts the burn, and a Mud Lake drill permit sets up a catalyst that could drive a rally of about 30% in the window.",
+    "what_would_change_my_mind": "I would move to HOLD or BUY on a sustained close above the SMA 50 (about C$0.227) with above-average volume on follow-through days, or on verified cash covering 12 or more months of burn. A material drill result, or a non-dilutive or strategic financing at or above the current price, would also change my view.",
+    "investment_plan": "## Recommendation\n**SELL** with 68% confidence over a 3-6 month horizon. Dryden Gold is a pre-revenue explorer in a confirmed downtrend with unverified funding and no fresh catalyst. The single-day bounce does not justify holding or adding to the position.\n\n## Rationale\n- **Trend:** The C$0.175 close is 22.9% below the SMA 50 (C$0.227) and 41.2% below the SMA 200 (C$0.2975). The SMA 50 is below the SMA 200, and returns are -27.1% (1M), -41.7% (3M) and -38.6% (1Y).\n- **Cash burn:** Free cash flow was -C$13.09M over four quarters, about 30% of the C$43.96M market cap. Operating losses run about C$3M per quarter, so C$3-6.5M of further burn is likely over the horizon. Cash is unverified and the last raise was C$9.6M, so dilution is the likely outcome.\n- **Bounce quality:** The 11/04 move (+20.7% on 855K shares) was followed by a flat session on 221K shares, below the 20-day average of 323K. With no news to explain it, it is not confirmed accumulation. Both sides agreed that the MACD histogram of 0.0023 is too small to call a reversal.\n- **Sentiment and catalysts:** The sole analyst target of C$1.20 has no dispersion or consensus behind it. The newest company news (Mud Lake drill permit, July 16) is nearly four months old and did not prevent the October sell-off.\n\n## Strongest Counter-Argument\nThe Bull argues that capitulation volume on 10/21 followed by a heavy-volume rebound on 11/04, plus a MACD above its signal line, may mark a bottom. The stock is already 63.5% below its high, and a drill program could re-rate it. I accept that this is plausible, but it is unconfirmed by follow-through volume or by a reclaim of the moving averages.\n\n## Key Risks\n- Short-covering or a speculative rally toward C$0.227 (+30%).\n- Positive drill results that re-rate the stock quickly.\n- Cash balance better than the data shows, or non-dilutive financing.\n- Illiquid micro-cap with large two-way price swings, 25% above the C$0.14 low.\n\n## What Would Change My Mind\nA sustained close above the SMA 50 (about C$0.227) on above-average volume, verified cash covering 12 or more months of burn, a material drill result, or financing at or above the current price without heavy dilution."
+  },
+  "models": {
+    "quick": "claude-haiku-5-5",
+    "deep": "claude-sonnet-5-5"
+  },
+  "debate_rounds": 2,
+  "usage": {
+    "claude-haiku-5-5": {
+      "input_tokens": 33502,
+      "output_tokens": 11507
+    },
+    "claude-sonnet-5-5": {
+      "input_tokens": 7035,
+      "output_tokens": 1699
+    }
+  },
+  "estimated_cost_usd": 0.0402,
+  "report_path": "reports/DRY.V_2026-11-05.md",
+  "disclaimer": "Educational project. Not financial advice."
+}

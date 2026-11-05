@@ -176,3 +176,29 @@ No questions this phase (none in the brief).
   - **Penny-stock precision:** 0.175 rendered as 0.17. A new `_price()` helper uses 4 decimals below $1 (prices, SMAs, MACD, targets).
   - Claims verified against raw data: FCF -C$13.09M, the +20.69% move on 11/04 on 855K shares, cash and debt n/a ("unverified").
 - Takeaway: the pipeline works for small caps and Canadian listings, but Yahoo's coverage there is thin (4–12 news items, 1 analyst), so calls rest on less evidence. That's a stronger case for the Phase 10 "better data" upgrade.
+
+---
+
+## Phase 9: Publish to GitHub (2026-11-05)
+
+### Batch A: the repo
+| Question | Decision |
+|---|---|
+| Repo name | **`multi-agent-equity-research`** |
+| Visibility | **Private first**; switch to public after review |
+| License | **MIT** |
+| GitHub CLI | Installed `gh` via Homebrew; the user runs `gh auth login` themselves |
+
+### Batch B: showcase content
+| Question | Decision |
+|---|---|
+| Example reports | **NVDA + NFGC + DRY.V** in `examples/` (mega-cap BUY, small-cap SELL, Canadian micro-cap SELL) |
+| Demo image | **LangGraph Studio screenshot**, captured by the user and saved to `docs/images/` |
+| CI | **Yes**: GitHub Actions runs the offline `pytest` suite on Python 3.11 and 3.13 with no API keys |
+| About section | **Name + GitHub handle** only |
+| Optional polish (ruff, type hints) | **Skipped** by the user |
+
+### Pre-publish audit
+- No key-shaped strings anywhere in git history (the only `sk-` text is the documented audit command). `.env` was never committed. No personal paths or names in tracked files; no debug prints in `src/`. `.gitignore` covers everything on the brief's list.
+- The build brief (`instructions.md`) stays local via `.git/info/exclude`, so it can't be committed by accident and its name isn't in the public `.gitignore`.
+- Added `LICENSE` (MIT), `.github/workflows/tests.yml` (offline pytest on 3.11 + 3.13), `examples/` (3 real reports + JSON), and the showcase README.

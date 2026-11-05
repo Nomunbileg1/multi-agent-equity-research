@@ -1,0 +1,41 @@
+{
+  "ticker": "NFGC",
+  "as_of_date": "2026-11-05",
+  "decision": {
+    "rating": "SELL",
+    "confidence": 60,
+    "time_horizon": "3-6 months",
+    "key_reasons": [
+      "The trend is still down: $1.64 is below the SMA 50 ($1.68) and SMA 200 ($1.95), the SMA 50 sits under the SMA 200, and the 1-year return is -15%. Rallies such as the +10.1% on 27 Oct have faded to $1.49.",
+      "Revenue growth ($0 to $15.72M over four quarters) has not produced operating leverage. Gross margin is flat at 11-15% (12.2% in Q2), and quarterly operating losses hold at about -$17M to -$21M (-109.8% trailing operating margin).",
+      "Trailing FCF is -$83.4M, which erodes net cash of about $135M at roughly $20M a quarter. That is about 1.6 years of runway, so financing or dilution becomes a question over time, and no financing news has been found.",
+      "There is no dated catalyst. The last substantive company news was the Jan-Feb project milestones, nothing material has appeared since the September CEO interview, and the only price target is a single analyst's $5.00 Buy with no consensus."
+    ],
+    "key_risks": [
+      "A short squeeze through the $1.68 SMA 50: days to cover is 8.49, and the rebound from $1.49 could extend toward the SMA 200 ($1.95).",
+      "A positive catalyst (resource update, permitting, financing on good terms, or evidence of gross margin expansion) could re-rate a stock sitting 54% below its 52-week high.",
+      "The sell case may be too bearish given the net cash position, 1.74x P/B and fast revenue growth, which give downside some support."
+    ],
+    "strongest_counterargument": "The company has about $135M net cash (cash $203.2M, debt $67.9M, D/E 0.13x), revenue that has compounded each quarter with positive gross margin throughout, and revenue beats of +58% and +93%. Runway comfortably exceeds the horizon, so there is no forced dilution. With 8.49 days to cover, a close above $1.68 could trigger a sharp squeeze from a stabilizing base (RSI 51.2, MACD histogram near zero).",
+    "what_would_change_my_mind": "A weekly close above the $1.68 SMA 50 and then the $1.95 SMA 200 on rising volume. Evidence of operating leverage, such as gross margin above about 20% or operating loss falling well below -$17M a quarter. A clearly explained Q2 net-loss improvement. A dated catalyst (resource update, permitting, or non-dilutive financing). Broader analyst coverage initiating at levels well above the current price.",
+    "investment_plan": "## Recommendation\n**SELL**, confidence 60%, horizon 3-6 months. NFGC is a pre-profit developer with a downtrend, flat operating losses and no identifiable catalyst. The fast revenue ramp and net cash cushion limit the downside but do not give a reason to own the stock over this horizon.\n\n## Rationale\n- **Trend:** The price of $1.64 is 2.3% below the SMA 50 ($1.68) and 15.8% below the SMA 200 ($1.95), with the 50 under the 200. The 1-month gain of +8.6% sits against -1.8% over 3 months and -15% over 1 year. Volume on the 30 Oct sell-off (2.69M shares) was heavier than on the 5 Nov flat close (2.04M).\n- **Fundamentals:** Revenue went from $0 to $5.81M, $9.89M and $15.72M, but gross margin has stayed at 12.1%, 14.6% and 12.2%. Operating losses are flat at about -$17M to -$21M a quarter. Trailing FCF of -$83.4M (operating cash flow -$61.0M, capex -$22.4M) means net cash of about $135M lasts roughly 1.6 years. The Q2 net loss narrowing to -$11.08M from -$19.11M came with a flat operating loss and an unexplained driver, so I give it no credit.\n- **Catalyst gap:** The news analyst found no company news on financing, permitting, resources or management after September. The Jan 2026 WSP EPCM contract and the Feb 2026 Keats results are stale. The bull accepted this and argued that the absence of bad news is supportive, which is not a driver for the horizon.\n- **Sentiment:** One analyst's $5.00 target (+205%) has no consensus behind it. The 8.49 days to cover are flagged as bearish, and the float percentage is unavailable, so a squeeze cannot be sized.\n\n## Strongest Counter-Argument\nNet cash of about $135M, runway well beyond the horizon, and revenue compounding with consistently positive gross margin. The price is 54% below its high, and heavy short positioning could fuel a squeeze if $1.68 is reclaimed.\n\n## Key Risks\n- A squeeze through $1.68 toward $1.95 would hurt a short or underweight stance.\n- An unexpected catalyst such as a resource update, permitting progress or financing on good terms could trigger a re-rating.\n- The balance sheet and 1.74x P/B may keep the shares from falling to the 52-week low of $1.34, so the downside may be modest.\n\n## What Would Change My Mind\n- Weekly closes above $1.68 and then $1.95 on rising volume.\n- Gross margin expanding well beyond 12-15%, or operating losses falling clearly below -$17M a quarter.\n- An explanation of the Q2 net-loss improvement.\n- A dated, material catalyst, or financing that is not dilutive.\n- Wider analyst coverage at targets well above the current price."
+  },
+  "models": {
+    "quick": "claude-haiku-5-5",
+    "deep": "claude-sonnet-5-5"
+  },
+  "debate_rounds": 2,
+  "usage": {
+    "claude-haiku-5-5": {
+      "input_tokens": 37817,
+      "output_tokens": 13393
+    },
+    "claude-sonnet-5-5": {
+      "input_tokens": 7414,
+      "output_tokens": 2173
+    }
+  },
+  "estimated_cost_usd": 0.047,
+  "report_path": "reports/NFGC_2026-11-05.md",
+  "disclaimer": "Educational project. Not financial advice."
+}
