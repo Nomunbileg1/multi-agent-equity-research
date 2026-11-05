@@ -77,6 +77,14 @@ def _money(value) -> str:
     return f"{sign}${number:,.2f}"
 
 
+def _price(value) -> str:
+    """Format a share price: 2 decimals normally, 4 below $1 (e.g. 0.175 -> '0.1750')."""
+    number = _to_float(value)
+    if number is None:
+        return "n/a"
+    return f"{number:,.2f}" if abs(number) >= 1 else f"{number:.4f}"
+
+
 def _clean_ticker(ticker: str) -> str:
     """Normalize user input like ' nvda ' -> 'NVDA'."""
     return ticker.strip().upper()
@@ -116,9 +124,11 @@ def _period_return(close: pd.Series, days: int) -> float | None:
 def get_market_data(ticker: str) -> str:
     """Price history, technical indicators and recent performance as plain text."""
     ticker = _clean_ticker(ticker)
-    history = yf.Ticker(ticker).history(period=config.PRICE_LOOKBACK)
+    stock = yf.Ticker(ticker)
+    history = stock.history(period=config.PRICE_LOOKBACK)
     if history.empty:
         raise DataUnavailableError(f"No price history found for '{ticker}'")
+    currency = stock.get_history_metadata().get("currency") or "USD"
 
     close = history["Close"]
 
@@ -156,23 +166,24 @@ def get_market_data(ticker: str) -> str:
 
     lines = [
         f"MARKET DATA FOR {ticker} (last close {last_date}, {len(history)} trading days of history)",
+        f"All prices are in {currency}.",
         "",
         "Performance:",
-        f"- Last close: ${_num(last_close)}",
+        f"- Last close: ${_price(last_close)}",
         f"- 1-month return: {_pct(_period_return(close, config.TRADING_DAYS_1M))}",
         f"- 3-month return: {_pct(_period_return(close, config.TRADING_DAYS_3M))}",
         f"- 1-year return: {_pct(_period_return(close, len(close) - 1))}",
-        f"- 52-week high: ${_num(high_52w)} (price is {vs(high_52w)} the high)",
-        f"- 52-week low: ${_num(low_52w)} (price is {vs(low_52w)} the low)",
+        f"- 52-week high: ${_price(high_52w)} (price is {vs(high_52w)} the high)",
+        f"- 52-week low: ${_price(low_52w)} (price is {vs(low_52w)} the low)",
         "",
         "Technical indicators:",
-        f"- SMA {config.SMA_SHORT}: ${_num(last_sma_short)} (price {vs(last_sma_short)})",
-        f"- SMA {config.SMA_LONG}: ${_num(last_sma_long)} (price {vs(last_sma_long)})",
+        f"- SMA {config.SMA_SHORT}: ${_price(last_sma_short)} (price {vs(last_sma_short)})",
+        f"- SMA {config.SMA_LONG}: ${_price(last_sma_long)} (price {vs(last_sma_long)})",
         f"- Moving-average trend: {cross}",
         f"- RSI {config.RSI_PERIOD}: {_num(rsi.iloc[-1], 1)} (above 70 = overbought, below 30 = oversold)",
         f"- MACD ({config.MACD_FAST}/{config.MACD_SLOW}/{config.MACD_SIGNAL}): "
-        f"MACD {_num(macd.iloc[-1])}, signal {_num(macd_signal.iloc[-1])}, "
-        f"histogram {_num(macd.iloc[-1] - macd_signal.iloc[-1])}",
+        f"MACD {_price(macd.iloc[-1])}, signal {_price(macd_signal.iloc[-1])}, "
+        f"histogram {_price(macd.iloc[-1] - macd_signal.iloc[-1])}",
         f"- Average daily volume (20d vs 50d): "
         f"{_num(history['Volume'].tail(20).mean(), 0)} vs {_num(history['Volume'].tail(50).mean(), 0)}",
         "",
@@ -184,7 +195,7 @@ def get_market_data(ticker: str) -> str:
     daily_change = recent["Close"].pct_change()
     for date, row in recent.iloc[1:].iterrows():
         lines.append(
-            f"| {date.strftime('%Y-%m-%d')} | ${_num(row['Close'])} | "
+            f"| {date.strftime('%Y-%m-%d')} | ${_price(row['Close'])} | "
             f"{_pct(daily_change.loc[date], 2)} | {_num(row['Volume'], 0)} |"
         )
     return "\n".join(lines)
@@ -211,7 +222,8 @@ def get_fundamentals(ticker: str) -> str:
     lines = [
         f"FUNDAMENTALS FOR {ticker}: {info.get('longName', ticker)}",
         f"Sector: {info.get('sector', 'n/a')} | Industry: {info.get('industry', 'n/a')} | "
-        f"Market cap: {_money(info.get('marketCap'))} | Price: ${_num(info.get('currentPrice'))}",
+        f"Market cap: {_money(info.get('marketCap'))} | Price: ${_price(info.get('currentPrice'))}",
+        f"Currency: {info.get('currency') or 'USD'} (prices; statements are usually in the same currency)",
         "",
         "Valuation:",
         f"- Trailing P/E: {_num(info.get('trailingPE'))}",
@@ -369,14 +381,14 @@ def get_sentiment_data(ticker: str) -> str:
         return f"{(target / price - 1) * 100:+.1f}%"
 
     lines = [
-        f"SENTIMENT DATA FOR {ticker}",
+        f"SENTIMENT DATA FOR {ticker} (prices in {info.get('currency') or 'USD'})",
         "",
         "Analyst price targets:",
-        f"- Current price: ${_num(price)}",
-        f"- Mean target: ${_num(info.get('targetMeanPrice'))} ({upside(info.get('targetMeanPrice'))} vs. price)",
-        f"- Median target: ${_num(info.get('targetMedianPrice'))} ({upside(info.get('targetMedianPrice'))})",
-        f"- High target: ${_num(info.get('targetHighPrice'))} ({upside(info.get('targetHighPrice'))})",
-        f"- Low target: ${_num(info.get('targetLowPrice'))} ({upside(info.get('targetLowPrice'))})",
+        f"- Current price: ${_price(price)}",
+        f"- Mean target: ${_price(info.get('targetMeanPrice'))} ({upside(info.get('targetMeanPrice'))} vs. price)",
+        f"- Median target: ${_price(info.get('targetMedianPrice'))} ({upside(info.get('targetMedianPrice'))})",
+        f"- High target: ${_price(info.get('targetHighPrice'))} ({upside(info.get('targetHighPrice'))})",
+        f"- Low target: ${_price(info.get('targetLowPrice'))} ({upside(info.get('targetLowPrice'))})",
         "",
         "Analyst consensus:",
         f"- Recommendation: {info.get('recommendationKey', 'n/a')} "
