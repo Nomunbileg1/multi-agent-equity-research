@@ -77,3 +77,30 @@ If you're picking this project up fresh, read this first.
 - `decision` is stored in state as a plain dict (`model_dump()`) so it saves straight to JSON.
 - Rating scale defaults to BUY/HOLD/SELL; Phase 5 confirms it.
 - `src/llm.py` imports without an API key (the client is created lazily), so the offline tests can run in CI with no secrets.
+
+---
+
+## Phase 4: Analyst team (2026-11-05)
+
+| Question | Decision |
+|---|---|
+| Analyst design | **(b) Tool-calling agents** in v1 (the brief's Phase 10 upgrade #1 moved up) |
+| Agent implementation | **Hand-built LangGraph loop**: `llm ⇄ ToolNode` with `tools_condition`, one small compiled graph per analyst. (`create_react_agent` is deprecated in LangGraph 1.x; its replacement `langchain.agents.create_agent` was not used, to keep the loop visible and avoid an extra dependency) |
+| Tools per analyst | **Own tool + related**. Market: market data. Fundamentals: fundamentals + market data. News: news + market data. Sentiment: sentiment + news |
+| Tool-call cap | **Max 3 rounds** per analyst (`MAX_TOOL_ROUNDS`), then the LLM is called with `tool_choice={"type": "none"}` so it must write |
+| Report style | **Under 400 words**: summary, bullets with numbers, `Factor / Observation / Signal` table, final `Verdict:` line |
+| Prompts | Draft prompts accepted as shown; "use only data provided" became "use only data returned by your tools" |
+
+### Design notes
+- New module `src/tools.py` wraps the `data.py` functions as LangChain `@tool`s. Tools never raise; failures return `DATA UNAVAILABLE: ...` so the analyst can report the gap.
+- Each analyst node runs its private agent loop and returns only `{<name>_report: text}`, so the outer graph's parallel fan-out is unchanged.
+- Any exception inside an analyst (API outage, empty reply) becomes a "data unavailable" report with a Neutral verdict instead of crashing the run.
+- `make_analyst(..., llm=...)` accepts an injected model so offline tests can use a fake LLM.
+
+### Live verification (NVDA, 2026-11-05)
+- All 4 analysts ran live: 1–3 tool calls each, every report ended with a verdict. **Total cost: $0.0053** (Haiku only).
+- Verdicts: Market **Bearish**, Fundamentals **Bullish**, News **Neutral**, Sentiment **Bullish**.
+- Fixes from that run:
+  - **FCF data bug:** Yahoo's `info["freeCashflow"]` reported $41.8B for NVDA against $127.0B of reported FCF over the last 4 quarters, which led the analyst to a false "weak cash conversion" finding. `get_fundamentals` now sums operating cash flow, capex and FCF from the last 4 quarterly cash-flow statements, using the info field only as a labeled fallback.
+  - Prompt: "never repeat a tool call with the same arguments" (the news analyst had fetched news twice).
+  - Prompt: the word limit explicitly includes the table (two reports ran to 423 and 456 words).

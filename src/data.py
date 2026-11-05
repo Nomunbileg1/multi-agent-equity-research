@@ -69,10 +69,12 @@ def _money(value) -> str:
     number = _to_float(value)
     if number is None:
         return "n/a"
+    sign = "-" if number < 0 else ""
+    number = abs(number)
     for divisor, suffix in [(1e12, "T"), (1e9, "B"), (1e6, "M")]:
-        if abs(number) >= divisor:
-            return f"${number / divisor:,.2f}{suffix}"
-    return f"${number:,.2f}"
+        if number >= divisor:
+            return f"{sign}${number / divisor:,.2f}{suffix}"
+    return f"{sign}${number:,.2f}"
 
 
 def _clean_ticker(ticker: str) -> str:
@@ -229,13 +231,38 @@ def get_fundamentals(ticker: str) -> str:
         "",
         "Balance sheet and cash flow:",
         f"- Debt/Equity: {debt_to_equity_text}",
-        f"- Free cash flow (trailing 12m): {_money(info.get('freeCashflow'))}",
+        *_ttm_cash_flow(ticker, info),
         f"- Total cash: {_money(info.get('totalCash'))}",
         f"- Total debt: {_money(info.get('totalDebt'))}",
         "",
     ]
     lines += _quarterly_table(ticker)
     return "\n".join(lines)
+
+
+def _ttm_cash_flow(ticker: str, info: dict) -> list[str]:
+    """Trailing-12-month operating cash flow, capex and free cash flow.
+
+    Summed from the last 4 quarterly cash-flow statements. We avoid Yahoo's
+    `info["freeCashflow"]`: it's a "levered" estimate that can be far off
+    (e.g. $41.8B vs. $127.0B of reported FCF for NVDA in Nov 2026). It's used
+    only as a labeled fallback if the statements are missing.
+    """
+    try:
+        cash_flow = yf.Ticker(ticker).quarterly_cashflow
+        last_4 = cash_flow.iloc[:, :4]
+        if last_4.shape[1] < 4:
+            raise ValueError("fewer than 4 quarters available")
+        operating = _to_float(last_4.loc["Operating Cash Flow"].sum())
+        capex = _to_float(last_4.loc["Capital Expenditure"].sum())
+        fcf = _to_float(last_4.loc["Free Cash Flow"].sum())
+        return [
+            f"- Operating cash flow (last 4 quarters): {_money(operating)}",
+            f"- Capital expenditure (last 4 quarters): {_money(capex)}",
+            f"- Free cash flow (last 4 quarters): {_money(fcf)}",
+        ]
+    except Exception:  # noqa: BLE001  (missing rows or statement -> fall back)
+        return [f"- Free cash flow (Yahoo levered-FCF estimate, may be unreliable): {_money(info.get('freeCashflow'))}"]
 
 
 def _quarterly_table(ticker: str) -> list[str]:

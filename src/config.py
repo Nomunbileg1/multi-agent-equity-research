@@ -26,6 +26,11 @@ MODEL_PRICES = {
     "claude-sonnet-5-5": (2.00, 10.00),
 }
 
+# --- Analysts ----------------------------------------------------------------
+
+# Max rounds of tool calls per analyst before it must write its report (caps cost).
+MAX_TOOL_ROUNDS = 3
+
 # --- Debate ------------------------------------------------------------------
 
 # One round = one bull turn + one bear turn.
