@@ -135,3 +135,25 @@ No questions this phase (none in the brief).
 - **Superstep finding:** with all 4 analysts finishing in the same LangGraph superstep, four separate edges would *also* run the bull once, so a run-order test alone can't catch a broken join. `test_debate_waits_for_all_four_analysts` checks the join edge directly. A mutation check confirmed it fails when the join is replaced with separate edges.
 - `tests/conftest.py` turns LangSmith tracing off and needs no API key, so CI can run the tests with no secrets.
 - Diagram: Mermaid saved to `docs/graph.mmd`. The PNG export (`draw_mermaid_png`) was skipped because it uploads the diagram to mermaid.ink. GitHub renders the Mermaid natively, and a LangGraph Studio screenshot is planned for Phase 9.
+
+---
+
+## Phase 7: Runner and output (2026-11-05)
+
+| Question | Decision |
+|---|---|
+| Output format | **Markdown + JSON**: `reports/<TICKER>_<YYYY-MM-DD>.md` and `.json` (decision, models, token usage, estimated cost) |
+| Multiple tickers | **Yes**: `python main.py NVDA AAPL WMT` runs them in turn and prints a summary table. One failed ticker doesn't stop the others |
+| Terminal output | **Checkmarks + decision**: `✓ <node> finished (Ns)`, then rating, confidence, reasons, risks, cost and report path |
+
+### Design notes
+- `main.py` streams with `stream_mode="updates"` and rebuilds the final state from the updates. Token usage is collected with `get_usage_metadata_callback()` and priced from `config.MODEL_PRICES`.
+- Rendering lives in `src/report.py` (testable offline). The report opens with a "Decision at a Glance" table and ends with a one-line disclaimer.
+- Extras: `--rounds` overrides the debate length; `--out` changes the output folder; ticker input is validated before any API call.
+- Tests: `tests/test_report.py` checks the disclaimer, sections, heading nesting, cost math, and an end-to-end `run_ticker` with the fake graph writing both files. 15 offline tests in total.
+
+### Live verification (NVDA, 2026-11-05)
+- `python main.py NVDA` ran end to end in **70s for $0.051** (Haiku 37.8k in / 13.7k out tokens; Sonnet 7.4k in / 2.5k out). Decision: **BUY, confidence 58/100, 3–6 months**.
+- Sonnet's structured output worked first time with `method="json_schema"`. The FCF fix shows correctly ($127.0B), and analyst reports stayed near 400 words.
+- Debate quality check: the bull wrongly said the 200-day SMA hadn't been lost. The bear caught it, and the bull conceded on the next turn. The "data-center curbs" risk in the decision traces back to the news analyst's report (not invented).
+- Fix: an analyst began its report with its own `## Title`, which looked like a new top-level report section. `report.py` now nests `#`/`##` headings inside all agent-written content under `###`, with a regression test (16 offline tests in total).
