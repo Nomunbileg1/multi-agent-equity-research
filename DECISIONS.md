@@ -104,3 +104,20 @@ If you're picking this project up fresh, read this first.
   - **FCF data bug:** Yahoo's `info["freeCashflow"]` reported $41.8B for NVDA against $127.0B of reported FCF over the last 4 quarters, which led the analyst to a false "weak cash conversion" finding. `get_fundamentals` now sums operating cash flow, capex and FCF from the last 4 quarterly cash-flow statements, using the info field only as a labeled fallback.
   - Prompt: "never repeat a tool call with the same arguments" (the news analyst had fetched news twice).
   - Prompt: the word limit explicitly includes the table (two reports ran to 423 and 456 words).
+
+---
+
+## Phase 5: Researcher team (2026-11-05)
+
+| Question | Decision |
+|---|---|
+| Debate rounds | **2** (`MAX_DEBATE_ROUNDS`): bull → bear → bull → bear |
+| Concessions | **Yes**. A side may concede clearly correct points but must explain why its thesis still holds |
+| Rating scale | **BUY / HOLD / SELL** (nuance carried by `confidence` 0–100) |
+| Prompts | Draft bull, bear and manager prompts accepted as shown |
+
+### Design notes
+- `make_researcher(side, opponent)` builds both debaters from one template. Each turn appends `### Bull (turn N)` to `debate_history`, sets `{side}_last`, and increments `debate_count`.
+- The research manager is a single Sonnet call with `with_structured_output(InvestmentDecision, method="json_schema")`. The written plan is the `investment_plan` field (sections: Recommendation, Rationale, Strongest Counter-Argument, Key Risks, What Would Change My Mind).
+- `DEEP_MAX_TOKENS` was raised from 8000 to 12000, because a response cut off by the token limit would break the JSON. Worst-case cost per ticker is still under $0.25.
+- Failures degrade gracefully: a failed debate turn records "(could not respond)" and still increments the count, so the loop always ends; a failed manager returns `rating: "UNAVAILABLE"` with the error.

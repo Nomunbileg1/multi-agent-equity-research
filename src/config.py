@@ -13,7 +13,7 @@ DEEP_MODEL = "claude-sonnet-5-5"
 # Max tokens per response. On Claude 5.5 models this includes any thinking tokens,
 # so leave headroom above the visible report length.
 QUICK_MAX_TOKENS = 4000
-DEEP_MAX_TOKENS = 8000
+DEEP_MAX_TOKENS = 12000  # thinking + a ~600-word plan + JSON fields; a cut-off would break the JSON
 
 # Effort ("low" | "medium" | "high" | "xhigh" | "max") controls how much the
 # model thinks before answering. These match each model's API default.
