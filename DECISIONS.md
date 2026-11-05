@@ -43,3 +43,21 @@ If you're picking this project up fresh, read this first.
 - `.gitignore` was created **before** `.env`. `.env` is a copy of `.env.example` that the user fills in themselves.
 - Verified: both keys load from `.env` in the right format. One test call to `claude-haiku-5-5` replied "OK" (22 tokens, ≈$0.000004), and its trace appeared in the LangSmith project `invest-agents`.
 - `instructions.md` (the build brief) stays local and uncommitted for now; to be revisited in the Phase 9 audit.
+
+---
+
+## Phase 2: Data layer (2026-11-05)
+
+| Question | Decision |
+|---|---|
+| Data sources | **yfinance only** for v1. One fetch function per analyst, so sources can be swapped later |
+| Price history and technicals | **1 year daily**; SMA 50/200, RSI 14, MACD 12/26/9, 1M/3M/1Y returns, 52-week high/low, last ~15 trading days as a table |
+| News | **Up to 20 most recent** headlines (date, title, source, summary) |
+| Sentiment | **Proxies** instead of social data: price vs. analyst targets, recommendation key, analyst count, short % of float, rating trend, recent headline tone |
+
+### Implementation notes
+- yfinance 1.8: `.news` returns only 10 items, so `get_news` uses `get_news(count=20)`. News arrives in the nested `content` format; flat-key parsing is kept for older versions.
+- Invalid tickers don't raise in yfinance (they return empty history or a near-empty `.info`), so `data.py` raises its own `DataUnavailableError`.
+- yfinance reports debt/equity as a percentage; it's converted to a ratio (16.97 → 0.17x).
+- Yahoo's per-ticker news feed includes loosely related stories, and its ticker tags are too loose to filter on. The news and sentiment analyst prompts (Phase 4) will tell them to ignore headlines unrelated to the company.
+- Output size per ticker: about 2,200 tokens across all four blocks (news is the largest at ~1,250).
