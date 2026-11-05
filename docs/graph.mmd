@@ -1,0 +1,30 @@
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+	__start__([<p>__start__</p>]):::first
+	market_analyst(market_analyst)
+	fundamentals_analyst(fundamentals_analyst)
+	news_analyst(news_analyst)
+	sentiment_analyst(sentiment_analyst)
+	bull_researcher(bull_researcher)
+	bear_researcher(bear_researcher)
+	research_manager(research_manager)
+	__end__([<p>__end__</p>]):::last
+	__start__ --> fundamentals_analyst;
+	__start__ --> market_analyst;
+	__start__ --> news_analyst;
+	__start__ --> sentiment_analyst;
+	bear_researcher -.-> bull_researcher;
+	bear_researcher -.-> research_manager;
+	bull_researcher --> bear_researcher;
+	fundamentals_analyst --> bull_researcher;
+	market_analyst --> bull_researcher;
+	news_analyst --> bull_researcher;
+	sentiment_analyst --> bull_researcher;
+	research_manager --> __end__;
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc

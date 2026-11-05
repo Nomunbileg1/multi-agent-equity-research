@@ -121,3 +121,17 @@ If you're picking this project up fresh, read this first.
 - The research manager is a single Sonnet call with `with_structured_output(InvestmentDecision, method="json_schema")`. The written plan is the `investment_plan` field (sections: Recommendation, Rationale, Strongest Counter-Argument, Key Risks, What Would Change My Mind).
 - `DEEP_MAX_TOKENS` was raised from 8000 to 12000, because a response cut off by the token limit would break the JSON. Worst-case cost per ticker is still under $0.25.
 - Failures degrade gracefully: a failed debate turn records "(could not respond)" and still increments the count, so the loop always ends; a failed manager returns `rating: "UNAVAILABLE"` with the error.
+
+---
+
+## Phase 6: Graph wiring (2026-11-05)
+
+No questions this phase (none in the brief).
+
+### Design notes
+- `build_graph(quick_llm, deep_llm, max_debate_rounds)` builds the graph, so tests can pass fake models. The module-level `graph = build_graph()` uses real Claude and is what `main.py` and LangGraph Studio load.
+- Fan-out: `START → each analyst`. Fan-in: one edge from the **list** of analysts to `bull_researcher`. Loop: a conditional edge after `bear_researcher` goes back to `bull_researcher` while `debate_count < 2 * MAX_DEBATE_ROUNDS`, otherwise on to `research_manager`.
+- **Tests use a custom `FakeClaude` (a small `BaseChatModel`) instead of `FakeListChatModel`.** `FakeListChatModel` can't `bind_tools`, so it couldn't exercise the tool-calling analysts. `FakeClaude` asks for a tool on its first analyst turn, writes a report quoting the tool result, and returns a valid `InvestmentDecision`. It decides from the messages alone, so it's safe across the 4 parallel analysts.
+- **Superstep finding:** with all 4 analysts finishing in the same LangGraph superstep, four separate edges would *also* run the bull once, so a run-order test alone can't catch a broken join. `test_debate_waits_for_all_four_analysts` checks the join edge directly. A mutation check confirmed it fails when the join is replaced with separate edges.
+- `tests/conftest.py` turns LangSmith tracing off and needs no API key, so CI can run the tests with no secrets.
+- Diagram: Mermaid saved to `docs/graph.mmd`. The PNG export (`draw_mermaid_png`) was skipped because it uploads the diagram to mermaid.ink. GitHub renders the Mermaid natively, and a LangGraph Studio screenshot is planned for Phase 9.
