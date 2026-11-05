@@ -1,8 +1,35 @@
 """Central configuration: every tunable setting lives here.
 
-Change a value here and the whole system picks it up. Phase 3 adds model and
-debate settings below the data settings.
+Change a value here and the whole system picks it up.
 """
+
+# --- Models (IDs checked against Anthropic's model docs, 2026-11-05) --------
+
+# "Quick" model: the 4 analysts and the bull/bear researchers (many calls, cheap).
+QUICK_MODEL = "claude-haiku-5-5"
+# "Deep" model: the research manager (one call, needs the best judgment).
+DEEP_MODEL = "claude-sonnet-5-5"
+
+# Max tokens per response. On Claude 5.5 models this includes any thinking tokens,
+# so leave headroom above the visible report length.
+QUICK_MAX_TOKENS = 4000
+DEEP_MAX_TOKENS = 8000
+
+# Effort ("low" | "medium" | "high" | "xhigh" | "max") controls how much the
+# model thinks before answering. These match each model's API default.
+QUICK_EFFORT = "medium"
+DEEP_EFFORT = "high"
+
+# USD per million tokens (input, output), used to estimate cost per run.
+MODEL_PRICES = {
+    "claude-haiku-5-5": (0.10, 0.50),   # prompts up to 100k tokens
+    "claude-sonnet-5-5": (2.00, 10.00),
+}
+
+# --- Debate ------------------------------------------------------------------
+
+# One round = one bull turn + one bear turn.
+MAX_DEBATE_ROUNDS = 2
 
 # --- Data settings (used by src/data.py) ------------------------------------
 

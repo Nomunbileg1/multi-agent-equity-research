@@ -61,3 +61,19 @@ If you're picking this project up fresh, read this first.
 - yfinance reports debt/equity as a percentage; it's converted to a ratio (16.97 → 0.17x).
 - Yahoo's per-ticker news feed includes loosely related stories, and its ticker tags are too loose to filter on. The news and sentiment analyst prompts (Phase 4) will tell them to ignore headlines unrelated to the company.
 - Output size per ticker: about 2,200 tokens across all four blocks (news is the largest at ~1,250).
+
+---
+
+## Phase 3: State, config and LLM setup (2026-11-05)
+
+| Question | Decision |
+|---|---|
+| Final decision format | **Both**: a written plan *and* a structured `InvestmentDecision` (rating, confidence 0–100, time_horizon, key_reasons, key_risks, strongest_counterargument, what_would_change_my_mind) |
+
+### Design notes
+- **One manager call, not two.** The written plan is a field (`investment_plan`) inside the structured `InvestmentDecision`, so Sonnet is called once. That's cheaper, and the rating and the text can't disagree.
+- Structured output uses `with_structured_output(InvestmentDecision, method="json_schema")` (Claude's native structured outputs). The default `function_calling` method forces a tool call, which the API rejects while thinking is on.
+- Claude 5.5 models think adaptively. `output_config={"effort": ...}` controls how much; config uses the API defaults (Haiku `medium`, Sonnet `high`). `max_tokens` includes thinking, so it's set with headroom (4000 / 8000).
+- `decision` is stored in state as a plain dict (`model_dump()`) so it saves straight to JSON.
+- Rating scale defaults to BUY/HOLD/SELL; Phase 5 confirms it.
+- `src/llm.py` imports without an API key (the client is created lazily), so the offline tests can run in CI with no secrets.
