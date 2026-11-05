@@ -34,7 +34,7 @@ from langgraph.graph import END, START, MessagesState, StateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
 
 from src import config
-from src.state import ResearchState
+from src.state import ResearchState, get_as_of_date
 from src.tools import fetch_fundamentals, fetch_market_data, fetch_news, fetch_sentiment_data
 
 # ---------------------------------------------------------------------------
@@ -151,7 +151,7 @@ def make_analyst(
             ANALYST_SYSTEM_PROMPT.format(
                 role=role,
                 ticker=ticker,
-                as_of_date=state["as_of_date"],
+                as_of_date=get_as_of_date(state),
                 focus=focus,
                 max_rounds=max_rounds,
                 max_words=REPORT_MAX_WORDS,

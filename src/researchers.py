@@ -16,7 +16,7 @@ from typing import Callable, Literal
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import HumanMessage, SystemMessage
 
-from src.state import InvestmentDecision, ResearchState
+from src.state import InvestmentDecision, ResearchState, get_as_of_date
 
 # ---------------------------------------------------------------------------
 # Prompts (edit these to change how the debate and the decision work)
@@ -102,7 +102,7 @@ def make_researcher(
                 side_title=side_title,
                 opponent_title=opponent_title,
                 ticker=state["ticker"],
-                as_of_date=state["as_of_date"],
+                as_of_date=get_as_of_date(state),
                 stance="for" if side == "bull" else "against",
             )
         )
@@ -146,7 +146,7 @@ def make_research_manager(llm: BaseChatModel | None = None) -> Callable[[Researc
 
     def research_manager(state: ResearchState) -> dict:
         system = SystemMessage(
-            MANAGER_SYSTEM_PROMPT.format(ticker=state["ticker"], as_of_date=state["as_of_date"])
+            MANAGER_SYSTEM_PROMPT.format(ticker=state["ticker"], as_of_date=get_as_of_date(state))
         )
         request = HumanMessage(
             f"ANALYST REPORTS\n\n{format_analyst_reports(state)}\n\n"

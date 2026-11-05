@@ -157,3 +157,22 @@ No questions this phase (none in the brief).
 - Sonnet's structured output worked first time with `method="json_schema"`. The FCF fix shows correctly ($127.0B), and analyst reports stayed near 400 words.
 - Debate quality check: the bull wrongly said the 200-day SMA hadn't been lost. The bear caught it, and the bull conceded on the next turn. The "data-center curbs" risk in the decision traces back to the news analyst's report (not invented).
 - Fix: an analyst began its report with its own `## Title`, which looked like a new top-level report section. `report.py` now nests `#`/`##` headings inside all agent-written content under `###`, with a regression test (16 offline tests in total).
+
+---
+
+## Phase 8: Docs and cleanup (2026-11-05)
+
+No questions this phase (none in the brief).
+
+- `README.md`: what it does, Mermaid architecture, agent table, setup, usage, LangGraph Studio, configuration, measured cost (~$0.05/ticker), tests, structure, troubleshooting, disclaimer. Phase 9 reworks it for the showcase.
+- `langgraph.json` added as specified. **Verified:** `langgraph dev` (langgraph-cli 0.4.41, installed into `.venv` but kept out of `requirements.txt` as an optional dev tool) loaded the `research` graph with all 9 nodes and 12 edges, and no errors.
+- Studio usability: `as_of_date` now defaults to today (`get_as_of_date()` in `state.py`), so a run can start with just `{"ticker": "NVDA"}`. Covered by a new test (17 offline tests).
+- Audit: `git log -p --all | grep -i "sk-ant\|lsv2_"` returns nothing; `.env` is not tracked; no personal paths in project files. `.langgraph_api/` is gitignored.
+
+### Extra live tests requested by the user (2026-11-05)
+- **NFGC** (New Found Gold, small-cap gold developer): **SELL 60/100**, $0.047, 62s. Thin data handled honestly: the single-analyst $5 target was called "one analyst's view, not a consensus"; P/E and PEG were marked unusable; the cited milestones (Jan EPCM contract, Feb Keats results) match real Yahoo news items.
+- **DRY.V** (Dryden Gold, TSX Venture explorer, outside the v1 US-only scope): **SELL 68/100**, $0.040, 56s. The free pre-check found two data-layer bugs, fixed before the live run:
+  - **Currency was unlabeled:** CAD prices printed as "$". Market data now states `All prices are in <currency>` (from `get_history_metadata()`, no extra request); fundamentals and sentiment show `info["currency"]`. The agents then wrote "C$" throughout (25 mentions, 0 USD slips).
+  - **Penny-stock precision:** 0.175 rendered as 0.17. A new `_price()` helper uses 4 decimals below $1 (prices, SMAs, MACD, targets).
+  - Claims verified against raw data: FCF -C$13.09M, the +20.69% move on 11/04 on 855K shares, cash and debt n/a ("unverified").
+- Takeaway: the pipeline works for small caps and Canadian listings, but Yahoo's coverage there is thin (4–12 news items, 1 analyst), so calls rest on less evidence. That's a stronger case for the Phase 10 "better data" upgrade.

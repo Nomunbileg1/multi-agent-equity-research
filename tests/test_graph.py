@@ -179,6 +179,12 @@ def test_failed_data_source_does_not_crash_the_run(monkeypatch):
     assert final["decision"]["rating"] in {"BUY", "HOLD", "SELL"}
 
 
+def test_runs_with_only_a_ticker():
+    """In LangGraph Studio you can start a run with just {"ticker": ...}; the date defaults to today."""
+    final = build_fake_graph().invoke({"ticker": "FAKE"})
+    assert final["decision"]["rating"] in {"BUY", "HOLD", "SELL"}
+
+
 @pytest.mark.parametrize(
     ("debate_count", "expected"),
     [(0, "bull_researcher"), (2, "bull_researcher"), (3, "bull_researcher"), (4, "research_manager")],

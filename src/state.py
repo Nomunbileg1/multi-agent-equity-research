@@ -9,6 +9,7 @@ returns its own keys, the 4 analysts can run in parallel without overwriting
 each other's reports.
 """
 
+from datetime import date
 from typing import Literal, TypedDict
 
 from pydantic import BaseModel, Field
@@ -65,3 +66,8 @@ class ResearchState(TypedDict, total=False):
     # --- Research manager ---------------------------------------------------
     investment_plan: str   # written plan in markdown
     decision: dict         # InvestmentDecision as a plain dict (easy to save as JSON)
+
+
+def get_as_of_date(state: ResearchState) -> str:
+    """The analysis date from the state, defaulting to today (handy when starting a run in Studio)."""
+    return state.get("as_of_date") or date.today().isoformat()
