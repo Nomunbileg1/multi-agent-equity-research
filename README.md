@@ -17,8 +17,14 @@ other and conceding fair points. Finally, a **research manager** on a stronger m
 debate on evidence and returns a **BUY / HOLD / SELL** rating with a confidence score and a
 written investment plan, as both Markdown and structured JSON.
 
-Inspired by [TauricResearch/TradingAgents](https://github.com/TauricResearch/TradingAgents),
-simplified to the Analyst Team and Researcher Team.
+The architecture is inspired by [TauricResearch/TradingAgents](https://github.com/TauricResearch/TradingAgents).
+This project focuses on the research half of that pipeline (the analyst and researcher teams) and
+was built from scratch on LangGraph 1.x and Claude, adding:
+
+- hand-built tool-calling loops with a cost cap,
+- a single structured-output decision with a confidence score,
+- an offline test suite with a fake LLM,
+- fixes for Yahoo data quirks found in live testing (free cash flow, currency, penny-stock precision).
 
 ## Architecture
 
