@@ -202,3 +202,9 @@ No questions this phase (none in the brief).
 - No key-shaped strings anywhere in git history (the only `sk-` text is the documented audit command). `.env` was never committed. No personal paths or names in tracked files; no debug prints in `src/`. `.gitignore` covers everything on the brief's list.
 - The build brief (`instructions.md`) stays local via `.git/info/exclude`, so it can't be committed by accident and its name isn't in the public `.gitignore`.
 - Added `LICENSE` (MIT), `.github/workflows/tests.yml` (offline pytest on 3.11 + 3.13), `examples/` (3 real reports + JSON), and the showcase README.
+
+### Publish
+- Studio screenshots (`docs/images/studio.png`, `studio_expanded.png`) were checked before committing: graph only, no account names, emails or browser chrome. The expanded view shows Studio drawing each analyst's `llm ⇄ tools` loop as a subgraph.
+- GitHub handle **Nomunbileg1**; the About section and LICENSE use the profile's display name, "Nomunbileg (Bill) Sukhbold".
+- Final pre-push audit: 0 key-shaped strings in history, `.env` never committed, 0 personal paths.
+- Created **private** repo https://github.com/Nomunbileg1/multi-agent-equity-research with `gh repo create --private --source=. --push`. Description and 10 topics set (langgraph, multi-agent, llm, claude, anthropic, investment-research, python, ai-agents, langchain, equity-research).
