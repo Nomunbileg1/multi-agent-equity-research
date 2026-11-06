@@ -2,7 +2,7 @@
 
 **A team of Claude agents researches a stock the way an equity research desk would: four analysts work in parallel, a bull and a bear debate the evidence, and a research manager makes the call.**
 
-[![tests](https://github.com/OWNER/multi-agent-equity-research/actions/workflows/tests.yml/badge.svg)](https://github.com/OWNER/multi-agent-equity-research/actions/workflows/tests.yml)
+[![tests](https://github.com/Nomunbileg1/multi-agent-equity-research/actions/workflows/tests.yml/badge.svg)](https://github.com/Nomunbileg1/multi-agent-equity-research/actions/workflows/tests.yml)
 ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)
 ![LangGraph 1.x](https://img.shields.io/badge/LangGraph-1.x-1c3c3c)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
@@ -52,7 +52,13 @@ reads the results, then writes a report of under 400 words ending in a Bullish /
 
 ## Demo
 
-![LangGraph Studio running the research graph](docs/images/studio.png)
+The research graph in LangGraph Studio:
+
+![LangGraph Studio: the research graph](docs/images/studio.png)
+
+Expanded, Studio shows each analyst's own `llm ⇄ tools` agent loop, all four running in parallel:
+
+![LangGraph Studio: analyst subgraphs expanded](docs/images/studio_expanded.png)
 
 Excerpt from a real run ([full NVDA report](examples/NVDA_2026-11-05.md)):
 
@@ -95,7 +101,7 @@ Each report has a matching `.json` file with the structured decision, token usag
 Requires Python 3.11+ and an [Anthropic API key](https://platform.claude.com/settings/keys).
 
 ```bash
-git clone https://github.com/OWNER/multi-agent-equity-research.git
+git clone https://github.com/Nomunbileg1/multi-agent-equity-research.git
 cd multi-agent-equity-research
 python3 -m venv .venv
 source .venv/bin/activate
@@ -213,4 +219,4 @@ from free public data, may be wrong or out of date, and is **not financial advic
 
 ## About
 
-Built by **nomunbileg** ([@OWNER](https://github.com/OWNER)).
+Built by **Nomunbileg (Bill) Sukhbold** ([@Nomunbileg1](https://github.com/Nomunbileg1)).
