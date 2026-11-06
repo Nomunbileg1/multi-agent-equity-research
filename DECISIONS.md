@@ -5,7 +5,7 @@ If you're picking this project up fresh, read this first.
 
 ---
 
-## Phase 0: Kickoff and discovery (2026-11-05)
+## Phase 0: Kickoff and discovery
 
 ### Goals
 | Question | Decision |
@@ -23,14 +23,14 @@ If you're picking this project up fresh, read this first.
 | Models | **Quick:** `claude-haiku-5-5` (4 analysts + bull/bear researchers). **Deep:** `claude-sonnet-5-5` (research manager) |
 | Cost ceiling | **Under $0.25 per ticker** |
 
-### Model facts (checked in Anthropic docs on 2026-11-05)
+### Model facts (checked in Anthropic docs)
 - `claude-haiku-5-5`: $0.10 input / $0.50 output per million tokens (prompts ≤100k tokens; above that $0.50 / $2.50).
 - `claude-sonnet-5-5`: $2 input / $10 output per million tokens.
 - Rough estimate per ticker: 8 Haiku calls + 1–2 Sonnet calls ≈ **$0.10–0.15**.
 
 ---
 
-## Phase 1: Project and environment setup (2026-11-05)
+## Phase 1: Project and environment setup
 
 | Question | Decision |
 |---|---|
@@ -46,7 +46,7 @@ If you're picking this project up fresh, read this first.
 
 ---
 
-## Phase 2: Data layer (2026-11-05)
+## Phase 2: Data layer
 
 | Question | Decision |
 |---|---|
@@ -64,7 +64,7 @@ If you're picking this project up fresh, read this first.
 
 ---
 
-## Phase 3: State, config and LLM setup (2026-11-05)
+## Phase 3: State, config and LLM setup
 
 | Question | Decision |
 |---|---|
@@ -80,7 +80,7 @@ If you're picking this project up fresh, read this first.
 
 ---
 
-## Phase 4: Analyst team (2026-11-05)
+## Phase 4: Analyst team
 
 | Question | Decision |
 |---|---|
@@ -97,7 +97,7 @@ If you're picking this project up fresh, read this first.
 - Any exception inside an analyst (API outage, empty reply) becomes a "data unavailable" report with a Neutral verdict instead of crashing the run.
 - `make_analyst(..., llm=...)` accepts an injected model so offline tests can use a fake LLM.
 
-### Live verification (NVDA, 2026-11-05)
+### Live verification (NVDA)
 - All 4 analysts ran live: 1–3 tool calls each, every report ended with a verdict. **Total cost: $0.0053** (Haiku only).
 - Verdicts: Market **Bearish**, Fundamentals **Bullish**, News **Neutral**, Sentiment **Bullish**.
 - Fixes from that run:
@@ -107,7 +107,7 @@ If you're picking this project up fresh, read this first.
 
 ---
 
-## Phase 5: Researcher team (2026-11-05)
+## Phase 5: Researcher team
 
 | Question | Decision |
 |---|---|
@@ -124,7 +124,7 @@ If you're picking this project up fresh, read this first.
 
 ---
 
-## Phase 6: Graph wiring (2026-11-05)
+## Phase 6: Graph wiring
 
 No questions this phase (none in the brief).
 
@@ -138,7 +138,7 @@ No questions this phase (none in the brief).
 
 ---
 
-## Phase 7: Runner and output (2026-11-05)
+## Phase 7: Runner and output
 
 | Question | Decision |
 |---|---|
@@ -152,13 +152,13 @@ No questions this phase (none in the brief).
 - Extras: `--rounds` overrides the debate length; `--out` changes the output folder; ticker input is validated before any API call.
 - Tests: `tests/test_report.py` checks the disclaimer, sections, heading nesting, cost math, and an end-to-end `run_ticker` with the fake graph writing both files. 15 offline tests in total.
 
-### Live verification (NVDA, 2026-11-05)
+### Live verification (NVDA)
 - `python main.py NVDA` ran end to end in **70s for $0.051** (Haiku 37.8k in / 13.7k out tokens; Sonnet 7.4k in / 2.5k out). Decision: **BUY, confidence 58/100, 3–6 months**.
 - Sonnet's structured output worked first time with `method="json_schema"`. The FCF fix shows correctly ($127.0B), and analyst reports stayed near 400 words.
 - Debate quality check: the bull wrongly said the 200-day SMA hadn't been lost. The bear caught it, and the bull conceded on the next turn. The "data-center curbs" risk in the decision traces back to the news analyst's report (not invented).
 - Fix: an analyst began its report with its own `## Title`, which looked like a new top-level report section. `report.py` now nests `#`/`##` headings inside all agent-written content under `###`, with a regression test (16 offline tests in total).
 
-### Extra live tests requested by the user (2026-11-05)
+### Extra live tests
 - **NFGC** (New Found Gold, small-cap gold developer): **SELL 60/100**, $0.047, 62s. Thin data handled honestly: the single-analyst $5 target was called "one analyst's view, not a consensus"; P/E and PEG were marked unusable; the cited milestones (Jan EPCM contract, Feb Keats results) match real Yahoo news items.
 - **DRY.V** (Dryden Gold, TSX Venture explorer, outside the v1 US-only scope): **SELL 68/100**, $0.040, 56s. The free pre-check found two data-layer bugs, fixed before the live run:
   - **Currency was unlabeled:** CAD prices printed as "$". Market data now states `All prices are in <currency>` (from `get_history_metadata()`, no extra request); fundamentals and sentiment show `info["currency"]`. The agents then wrote "C$" throughout (25 mentions, 0 USD slips).
