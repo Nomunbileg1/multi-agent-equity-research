@@ -18,7 +18,7 @@ If you're picking this project up fresh, read this first.
 ### Setup
 | Question | Decision |
 |---|---|
-| Project folder | `~/Desktop/Invest Agent` (the GitHub repo name is chosen in Phase 9) |
+| Project folder | `~/Desktop/Invest Agent` |
 | Environment | `venv` at `.venv/`, built from Anaconda Python 3.13.9 (`/opt/anaconda3/bin/python`). Never `/usr/bin/python3` (3.9.6, too old) |
 | Models | **Quick:** `claude-haiku-5-5` (4 analysts + bull/bear researchers). **Deep:** `claude-sonnet-5-5` (research manager) |
 | Cost ceiling | **Under $0.25 per ticker** |
@@ -42,7 +42,7 @@ If you're picking this project up fresh, read this first.
 - Pinned direct dependencies in `requirements.txt` (langgraph 1.2.20, langchain-anthropic 1.7.10, langchain-core 1.7.6, langsmith 0.14.17, yfinance 1.8.0, pandas 3.1.1, python-dotenv 1.2.4, pytest 9.2.0).
 - `.gitignore` was created **before** `.env`. `.env` is a copy of `.env.example` that the user fills in themselves.
 - Verified: both keys load from `.env` in the right format. One test call to `claude-haiku-5-5` replied "OK" (22 tokens, ≈$0.000004), and its trace appeared in the LangSmith project `invest-agents`.
-- `instructions.md` (the build brief) stays local and uncommitted for now; to be revisited in the Phase 9 audit.
+- `instructions.md` (the build brief) stays local and is never committed.
 
 ---
 
@@ -134,7 +134,7 @@ No questions this phase (none in the brief).
 - **Tests use a custom `FakeClaude` (a small `BaseChatModel`) instead of `FakeListChatModel`.** `FakeListChatModel` can't `bind_tools`, so it couldn't exercise the tool-calling analysts. `FakeClaude` asks for a tool on its first analyst turn, writes a report quoting the tool result, and returns a valid `InvestmentDecision`. It decides from the messages alone, so it's safe across the 4 parallel analysts.
 - **Superstep finding:** with all 4 analysts finishing in the same LangGraph superstep, four separate edges would *also* run the bull once, so a run-order test alone can't catch a broken join. `test_debate_waits_for_all_four_analysts` checks the join edge directly. A mutation check confirmed it fails when the join is replaced with separate edges.
 - `tests/conftest.py` turns LangSmith tracing off and needs no API key, so CI can run the tests with no secrets.
-- Diagram: Mermaid saved to `docs/graph.mmd`. The PNG export (`draw_mermaid_png`) was skipped because it uploads the diagram to mermaid.ink. GitHub renders the Mermaid natively, and a LangGraph Studio screenshot is planned for Phase 9.
+- Diagram: Mermaid saved to `docs/graph.mmd`. The PNG export (`draw_mermaid_png`) was skipped because it uploads the diagram to mermaid.ink. GitHub renders the Mermaid natively, and LangGraph Studio screenshots show the graph visually.
 
 ---
 
@@ -158,17 +158,6 @@ No questions this phase (none in the brief).
 - Debate quality check: the bull wrongly said the 200-day SMA hadn't been lost. The bear caught it, and the bull conceded on the next turn. The "data-center curbs" risk in the decision traces back to the news analyst's report (not invented).
 - Fix: an analyst began its report with its own `## Title`, which looked like a new top-level report section. `report.py` now nests `#`/`##` headings inside all agent-written content under `###`, with a regression test (16 offline tests in total).
 
----
-
-## Phase 8: Docs and cleanup (2026-11-05)
-
-No questions this phase (none in the brief).
-
-- `README.md`: what it does, Mermaid architecture, agent table, setup, usage, LangGraph Studio, configuration, measured cost (~$0.05/ticker), tests, structure, troubleshooting, disclaimer. Phase 9 reworks it for the showcase.
-- `langgraph.json` added as specified. **Verified:** `langgraph dev` (langgraph-cli 0.4.41, installed into `.venv` but kept out of `requirements.txt` as an optional dev tool) loaded the `research` graph with all 9 nodes and 12 edges, and no errors.
-- Studio usability: `as_of_date` now defaults to today (`get_as_of_date()` in `state.py`), so a run can start with just `{"ticker": "NVDA"}`. Covered by a new test (17 offline tests).
-- Audit: `git log -p --all | grep -i "sk-ant\|lsv2_"` returns nothing; `.env` is not tracked; no personal paths in project files. `.langgraph_api/` is gitignored.
-
 ### Extra live tests requested by the user (2026-11-05)
 - **NFGC** (New Found Gold, small-cap gold developer): **SELL 60/100**, $0.047, 62s. Thin data handled honestly: the single-analyst $5 target was called "one analyst's view, not a consensus"; P/E and PEG were marked unusable; the cited milestones (Jan EPCM contract, Feb Keats results) match real Yahoo news items.
 - **DRY.V** (Dryden Gold, TSX Venture explorer, outside the v1 US-only scope): **SELL 68/100**, $0.040, 56s. The free pre-check found two data-layer bugs, fixed before the live run:
@@ -177,34 +166,3 @@ No questions this phase (none in the brief).
   - Claims verified against raw data: FCF -C$13.09M, the +20.69% move on 11/04 on 855K shares, cash and debt n/a ("unverified").
 - Takeaway: the pipeline works for small caps and Canadian listings, but Yahoo's coverage there is thin (4–12 news items, 1 analyst), so calls rest on less evidence. That's a stronger case for the Phase 10 "better data" upgrade.
 
----
-
-## Phase 9: Publish to GitHub (2026-11-05)
-
-### Batch A: the repo
-| Question | Decision |
-|---|---|
-| Repo name | **`multi-agent-equity-research`** |
-| Visibility | **Private first**; switch to public after review |
-| License | **MIT** |
-| GitHub CLI | Installed `gh` via Homebrew; the user runs `gh auth login` themselves |
-
-### Batch B: showcase content
-| Question | Decision |
-|---|---|
-| Example reports | **NVDA + NFGC + DRY.V** in `examples/` (mega-cap BUY, small-cap SELL, Canadian micro-cap SELL) |
-| Demo image | **LangGraph Studio screenshot**, captured by the user and saved to `docs/images/` |
-| CI | **Yes**: GitHub Actions runs the offline `pytest` suite on Python 3.11 and 3.13 with no API keys |
-| About section | **Name + GitHub handle** only |
-| Optional polish (ruff, type hints) | **Skipped** by the user |
-
-### Pre-publish audit
-- No key-shaped strings anywhere in git history (the only `sk-` text is the documented audit command). `.env` was never committed. No personal paths or names in tracked files; no debug prints in `src/`. `.gitignore` covers everything on the brief's list.
-- The build brief (`instructions.md`) stays local via `.git/info/exclude`, so it can't be committed by accident and its name isn't in the public `.gitignore`.
-- Added `LICENSE` (MIT), `.github/workflows/tests.yml` (offline pytest on 3.11 + 3.13), `examples/` (3 real reports + JSON), and the showcase README.
-
-### Publish
-- Studio screenshots (`docs/images/studio.png`, `studio_expanded.png`) were checked before committing: graph only, no account names, emails or browser chrome. The expanded view shows Studio drawing each analyst's `llm ⇄ tools` loop as a subgraph.
-- GitHub handle **Nomunbileg1**; the About section and LICENSE use the profile's display name, "Nomunbileg (Bill) Sukhbold".
-- Final pre-push audit: 0 key-shaped strings in history, `.env` never committed, 0 personal paths.
-- Created **private** repo https://github.com/Nomunbileg1/multi-agent-equity-research with `gh repo create --private --source=. --push`. Description and 10 topics set (langgraph, multi-agent, llm, claude, anthropic, investment-research, python, ai-agents, langchain, equity-research).
